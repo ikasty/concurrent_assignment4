@@ -13,6 +13,8 @@ spinmake:
 
 run:
 	./$(OUT)
+trace:
+	$(SPIN) -t -p ./$(CODE)
 
 clean:
 	rm $(SPIN)
