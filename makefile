@@ -17,5 +17,5 @@ trace:
 	$(SPIN) -t -p ./$(CODE)
 
 clean:
-	rm $(SPIN)
+	rm $(SPIN) *.trail $(OUT)
 	$(MAKE) -C $(SPINSRC) clean
