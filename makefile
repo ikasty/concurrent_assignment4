@@ -3,7 +3,7 @@ SPIN=./spin
 CODE=rwlock.pml
 OUT=rwlock
 
-all: spinmake
+all:
 	$(SPIN) -a $(CODE)
 	gcc pan.c -o ./$(OUT)
 
@@ -17,5 +17,5 @@ trace:
 	$(SPIN) -t -p ./$(CODE)
 
 clean:
-	rm $(SPIN) *.trail $(OUT)
+	rm *.trail $(OUT)
 	$(MAKE) -C $(SPINSRC) clean
