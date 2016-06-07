@@ -35,8 +35,6 @@ inline rlock() { // mylib_rwlock_rlock()
 
 	do
 	:: pending_writers > 0 || writers > 0 ->
-		// check 2. Read concurrency
-		assert(readers == 0);
 		cond_wait(readers_proceed, read_write_lock);
 	:: else -> break;
 	od
