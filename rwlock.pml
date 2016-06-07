@@ -37,8 +37,6 @@ inline rlock() { // mylib_rwlock_rlock()
 
 	do
 	:: pending_writers > 0 || writers > 0 ->
-		// check 2. Read concurrency
-		assert(readers == 0);
 pending_readers++;
 		cond_wait(readers_proceed, read_write_lock);
 pending_readers--;
@@ -57,10 +55,11 @@ inline wlock() { // mylib_rwlock_wlock()
 	:: (writers > 0 || readers > 0) ->
 		pending_writers++;
 		cond_wait(writer_proceed, read_write_lock);
+pending_writers--;
 	:: else -> break;
 	od
 
-	pending_writers--;
+//	pending_writers--;
 	writers++
 
 	unlock(read_write_lock);
@@ -80,7 +79,7 @@ inline rwunlock() { // mylib_rwlock_unlock()
 	if
 	:: readers == 0 && pending_writers > 0 ->
 		cond_signal(writer_proceed);
-	:: readers > 0 || pending_readers > 0 ->
+	:: pending_readers > 0 && pending_writers == 0 ->
 		cond_broadcast(readers_proceed);
 	:: else -> skip;
 	fi
