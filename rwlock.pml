@@ -82,13 +82,9 @@ inline rwunlock() { // mylib_rwlock_unlock()
 
 
 inline lock(m) { // pthread_mutex_lock()
-skip;
-again:	m == 0;
 	atomic {
-		if
-		:: m != 0 -> goto again;
-		:: else -> m = 1;
-		fi
+		m == 0;
+		m = 1;
 	}
 }
 
@@ -105,12 +101,9 @@ inline cond_wait(cv, m) { // pthread_cond_wait()
 		cv.w++;
 	}
 
-again:	cv.w == cv.s;
 	atomic {
-		if
-		:: m != 0 -> goto again;
-		:: else -> m = 1;
-		fi
+		cv.w == cv.s && m == 0;
+		m = 1;
 	}
 }
 
@@ -133,4 +126,15 @@ proctype writer() {
 	wlock() ;
 	/* critical section */
 	rwunlock() ;
+}
+
+active proctype check() {
+	// 0. predefined
+	assert(pending_writers >= 0);
+	assert(readers >= 0);
+	assert(writers >= 0);
+
+	// 1. exclusive writing
+	assert(writers > 0 && readers == 0 || writers == 0);
+	assert(writers <= 1);
 }
