@@ -57,6 +57,8 @@ inline wlock() { // mylib_rwlock_wlock()
 	pending_writers--;
 	writers++
 
+	assert(pending_writers >= 0);
+
 	unlock(read_write_lock);
 }
 
