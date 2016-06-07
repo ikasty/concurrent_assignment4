@@ -3,8 +3,8 @@
  * */
 
 typedef cond_var {
-	int w;
-	int s;
+	int wait;
+	int signal;
 }
 
 int readers ;
@@ -103,21 +103,21 @@ inline unlock(m) { // pthread_mutex_unlock()
 inline cond_wait(cv, m) { // pthread_cond_wait()
 	atomic {
 		unlock(m);
-		cv.w++;
+		cv.wait++;
 	}
 
 	atomic {
-		cv.w == cv.s && m == 0;
+		cv.wait == cv.signal && m == 0;
 		m = 1;
 	}
 }
 
 inline cond_signal(cv) { // pthread_cond_signal()
-	cv.s = cv.w;
+	cv.signal = cv.wait;
 }
 
 inline cond_broadcast(cv) {// pthread_cond_broadcast()
-	cv.s = cv.w;
+	cv.signal = cv.wait;
 }
 
 
