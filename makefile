@@ -12,6 +12,7 @@ spinmake:
 	cp $(SPINSRC)/spin $(SPIN)
 
 run:
+	-rm *.trail
 	./$(OUT)
 trace:
 	$(SPIN) -t -p ./$(CODE)
