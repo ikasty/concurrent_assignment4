@@ -46,15 +46,16 @@ inline rlock() { // mylib_rwlock_rlock()
 
 inline wlock() { // mylib_rwlock_wlock()
 	lock(read_write_lock);
-
+pending_writers++;
 	do
 	:: (writers > 0 || readers > 0) ->
-		pending_writers++;
+//		pending_writers++;
 		cond_wait(writer_proceed, read_write_lock);
-		pending_writers--;
+//pending_writers--;
 	:: else -> break;
 	od
 
+	pending_writers--;
 	writers++
 	assert(pending_writers >= 0);
 
