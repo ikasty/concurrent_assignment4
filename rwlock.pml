@@ -77,6 +77,8 @@ inline rwunlock() { // mylib_rwlock_unlock()
 	:: readers == 0 && pending_writers > 0 ->
 		cond_signal(writer_proceed);
 	:: readers > 0 ->
+		// 3. high priority writer check
+		assert(pending_writers == 0);
 		cond_broadcast(readers_proceed);
 	:: else -> skip;
 	fi
@@ -131,7 +133,7 @@ proctype writer() {
 }
 
 active proctype check() {
-	// 0. predefined
+	// 0. semantic check
 	assert(pending_writers >= 0);
 	assert(readers >= 0);
 	assert(writers >= 0);
@@ -139,4 +141,7 @@ active proctype check() {
 	// 1. exclusive writing
 	assert(writers > 0 && readers == 0 || writers == 0);
 	assert(writers <= 1);
+
+	// 2. read concurrency
+	assert(readers >= 0);
 }
