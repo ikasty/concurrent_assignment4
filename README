@@ -1,0 +1,21 @@
+Assignment 4
+SPIN model checking
+=============================
+
+Requirements:
+You need executable spin file IN CURRENT FOLDER. If you get error message like:
+	make: ./spin: Command not found
+
+Then you have to do one of these two options.
+  1) Compile SPIN: put source code into ./src/ folder, and use `make spinmake`.
+  2) If you already install SPIN in system, then just type:
+	$) cp $(which spin) ./
+
+
+Usage:
+  1) Compile:
+	$) make
+  2) Run:
+	$) make run
+  3) Trace (if it has bug):
+	$) make trace

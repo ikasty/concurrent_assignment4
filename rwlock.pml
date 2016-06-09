@@ -12,12 +12,14 @@ int writers ;
 cond_var readers_proceed ;
 cond_var writer_proceed ;
 int pending_writers ;
+int pending_readers ;
 bool read_write_lock ;
 
 init { // mylib_rwlock_init()
 	readers = 0 ;
 	writers = 0 ;
 	pending_writers = 0 ;
+	pending_readers = 0 ;
 
 	// Initialization of read_write_lock
 	read_write_lock = 0 ;
@@ -35,7 +37,9 @@ inline rlock() { // mylib_rwlock_rlock()
 
 	do
 	:: pending_writers > 0 || writers > 0 ->
+		pending_readers++;
 		cond_wait(readers_proceed, read_write_lock);
+		pending_readers--;
 	:: else -> break;
 	od
 
@@ -51,10 +55,11 @@ inline wlock() { // mylib_rwlock_wlock()
 	:: (writers > 0 || readers > 0) ->
 		pending_writers++;
 		cond_wait(writer_proceed, read_write_lock);
+		pending_writers--;
 	:: else -> break;
 	od
 
-	pending_writers--;
+//	pending_writers--;
 	writers++
 
 	assert(pending_writers >= 0);
@@ -76,14 +81,14 @@ inline rwunlock() { // mylib_rwlock_unlock()
 	if
 	:: readers == 0 && pending_writers > 0 ->
 		cond_signal(writer_proceed);
-	:: readers > 0 ->
+	// :: readers > 0 ->
+	:: pending_readers > 0 && pending_writers == 0 ->
 		// 3. high priority writer check
 		assert(pending_writers == 0);
 		cond_broadcast(readers_proceed);
 	:: else -> skip;
 	fi
 }
-
 
 inline lock(m) { // pthread_mutex_lock()
 	atomic {
